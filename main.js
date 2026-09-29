@@ -609,7 +609,17 @@ class CardModal extends Modal {
   }
   onOpen() {
     const edit = !!this.card;
+    this.phone = Platform.isPhone;
     this.modalEl.addClass('dsc-modal');
+    if (this.phone) {
+      // 휴대폰: 바텀시트 (와이어 M03). 키보드가 올라오면 시트도 키보드 위로 올라간다
+      this.modalEl.addClass('dsc-phone');
+      this.containerEl.addClass('dsc-sheet');
+      this.modalEl.prepend(createDiv({ cls: 'dsc-grab' }));
+      // 키보드 바로 위 줄: 이전 타이틀 칩(M03-1) · 상태값 추가 입력(M03-3)
+      this.kbar = this.modalEl.createDiv({ cls: 'dsc-kbar' }); this.kbar.hidden = true; this.kbarMode = null;
+      this.contentEl.addEventListener('focusin', (e) => { const el = e.target; setTimeout(() => { if (el instanceof HTMLElement && el.isConnected) el.scrollIntoView({ block: 'nearest' }); }, 350); });
+    }
     this.titleEl.setText(edit ? '카드 수정' : '새 카드');
     const c = this.contentEl;
     c.empty();
@@ -628,9 +638,10 @@ class CardModal extends Modal {
     this.titleInput = t.createEl('input', { cls: 'dsc-input', attr: { type: 'text', placeholder: '입력하거나 이전 타이틀 선택', id: 'dsc-title' } });
     this.titleInput.value = this.f.title;
     this.suggest = t.createDiv({ cls: 'dsc-suggest' }); this.suggest.hidden = true;
-    this.titleInput.oninput = () => { this.f.title = this.titleInput.value; this.renderSuggest(); this.auto(); };
-    this.titleInput.onfocus = () => this.renderSuggest();
-    this.titleInput.onblur = () => setTimeout(() => { this.suggest.hidden = true; }, 120);
+    const suggest = () => (this.phone ? this.renderTitleChips() : this.renderSuggest());
+    this.titleInput.oninput = () => { this.f.title = this.titleInput.value; suggest(); this.auto(); };
+    this.titleInput.onfocus = suggest;
+    this.titleInput.onblur = () => setTimeout(() => { this.suggest.hidden = true; if (this.kbarMode === 'titles') this.hideKbar(); }, 150);
     this.titleInput.onkeydown = (e) => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); this.submit(); } };
 
     this.catBox = field('업무 분류').g.createDiv({ cls: 'dsc-dd' });
@@ -655,8 +666,7 @@ class CardModal extends Modal {
     this.renderNet();
 
     // 휴대폰(바텀시트): 아래 버튼은 만들기·저장 하나, 취소는 위쪽 ✕ (와이어 M03)
-    const phone = Platform.isPhone;
-    this.modalEl.toggleClass('dsc-phone', phone);
+    const phone = this.phone;
     const foot = c.createDiv({ cls: 'dsc-foot' + (phone ? ' is-phone' : '') });
     const del = () => this.plugin.confirmDelete(this.card.file, () => this.close());
     if (edit && !phone) foot.createEl('button', { cls: 'dsc-del', text: '삭제' }).onclick = del;
@@ -704,6 +714,73 @@ class CardModal extends Modal {
     box.hidden = false;
   }
 
+  // 이전 타이틀 (최근 사용 순)
+  titleHits(v, max) {
+    const seen = new Map();
+    for (const c of this.plugin.getCards().sort(byNewest)) {
+      if (!seen.has(c.title)) seen.set(c.title, { title: c.title, date: c.date, n: 0 });
+      seen.get(c.title).n++;
+    }
+    return Array.from(seen.values()).filter((x) => !v || (x.title.includes(v) && x.title !== v)).slice(0, max);
+  }
+
+  hideKbar() { if (!this.kbar) return; this.kbar.hidden = true; this.kbar.empty(); this.kbarMode = null; }
+
+  // 휴대폰: 키보드 위 줄에 이전 타이틀 칩 (M03-1). 겹치는 게 없으면 줄을 숨긴다 = 새 타이틀
+  renderTitleChips() {
+    const v = this.titleInput.value.trim();
+    const hits = this.titleHits(v, 10);
+    if (!hits.length) { if (this.kbarMode === 'titles') this.hideKbar(); return; }
+    const bar = this.kbar; bar.empty(); bar.hidden = false; this.kbarMode = 'titles';
+    bar.removeClass('is-input');
+    for (const h of hits) {
+      const b = bar.createEl('button', { cls: 'dsc-kchip' });
+      const i = v ? h.title.indexOf(v) : -1;
+      if (i >= 0) { b.appendText(h.title.slice(0, i)); b.createEl('strong', { text: v }); b.appendText(h.title.slice(i + v.length)); } else b.setText(h.title);
+      b.onpointerdown = (e) => e.preventDefault(); // 입력칸 포커스(키보드) 유지
+      b.onclick = () => { this.titleInput.value = h.title; this.f.title = h.title; this.auto(); this.hideKbar(); this.titleInput.blur(); };
+    }
+  }
+
+  // 휴대폰: 업무 분류는 아래에서 올라오는 목록 (M03-2, 상세 페이지와 같은 옵시디언 메뉴)
+  catMenu(anchor) {
+    const menu = new Menu();
+    const add = (c) => menu.addItem((i) => {
+      i.setTitle(c ? c.name : '분류 없음').setChecked((c ? c.name : null) === this.f.category)
+        .onClick(() => { this.f.category = c ? c.name : null; this.f.manual = true; this.renderCat(); });
+      const t = i.titleEl || (i.dom && i.dom.querySelector('.menu-item-title'));
+      if (t) { const d = createSpan({ cls: 'dsc-dot dsc-menu-dot' + (c ? '' : ' is-none') }); catStyle(d, c); t.prepend(d); }
+    });
+    add(null);
+    for (const c of this.plugin.settings.categories) add(c);
+    const r = anchor.getBoundingClientRect();
+    menu.showAtPosition({ x: r.left, y: r.bottom + 4 });
+  }
+
+  async addState(v) {
+    const S = this.plugin.settings;
+    v = (v || '').trim();
+    if (v) {
+      if (!S.states.includes(v)) { this.plugin.assignTone(v); S.states.push(v); await this.plugin.saveSettings(); }
+      this.f.state = v;
+    }
+    this.f.adding = false; this.renderStates();
+  }
+
+  // 휴대폰: 상태값 추가 입력을 키보드 위 줄에 (M03-3) — 키보드에 가려지지 않게
+  showStateInput() {
+    const bar = this.kbar; bar.empty(); bar.hidden = false; this.kbarMode = 'state'; bar.addClass('is-input');
+    const inp = bar.createEl('input', { cls: 'dsc-kbar-input', attr: { type: 'text', placeholder: '새 상태값', 'aria-label': '새 상태값', enterkeyhint: 'done' } });
+    const ok = bar.createEl('button', { cls: 'dsc-kbar-ok mod-cta', text: '추가' });
+    let done = false;
+    const commit = async () => { if (done) return; done = true; const v = inp.value; this.hideKbar(); await this.addState(v); };
+    inp.onkeydown = (e) => { if (e.key === 'Enter') { e.preventDefault(); commit(); } };
+    ok.onpointerdown = (e) => e.preventDefault();
+    ok.onclick = commit;
+    inp.onblur = () => setTimeout(() => { if (!done && this.kbarMode === 'state') { this.hideKbar(); this.f.adding = false; this.renderStates(); } }, 200);
+    setTimeout(() => inp.focus(), 0);
+  }
+
   renderCat() {
     const box = this.catBox; box.empty();
     const cat = this.plugin.catOf(this.f.category);
@@ -712,7 +789,7 @@ class CardModal extends Modal {
     else if (this.f.category) { b.createSpan({ cls: 'dsc-dot is-none' }); b.createSpan({ cls: 'dsc-dd-label', text: this.f.category }); }
     else b.createSpan({ cls: 'dsc-dd-label is-empty', text: '분류 선택' });
     setIcon(b.createSpan({ cls: 'dsc-dd-chev' }), this.f.ddOpen ? 'chevron-up' : 'chevron-down');
-    b.onclick = (e) => { e.stopPropagation(); this.f.ddOpen = !this.f.ddOpen; this.renderCat(); };
+    b.onclick = (e) => { e.stopPropagation(); if (this.phone) { this.catMenu(b); return; } this.f.ddOpen = !this.f.ddOpen; this.renderCat(); };
     if (!this.f.ddOpen) return;
     const menu = box.createDiv({ cls: 'dsc-dd-menu', attr: { role: 'listbox' } });
     const opt = (c) => {
@@ -751,25 +828,20 @@ class CardModal extends Modal {
         chip.onclick = () => { this.f.state = on ? null : s; this.renderStates(); };
       }
     }
-    if (this.f.adding) {
+    if (this.f.adding && this.phone) {
+      box.createEl('button', { cls: 'dsc-chip dsc-chip-add is-active', text: '+ 값 추가' });
+    } else if (this.f.adding) {
       const wrap = box.createDiv({ cls: 'dsc-chip dsc-chip-input' });
       const inp = wrap.createEl('input', { attr: { type: 'text', placeholder: '새 값', 'aria-label': '새 상태값' } });
       const okb = wrap.createEl('button', { cls: 'dsc-chip-ok', attr: { 'aria-label': '추가' } }); setIcon(okb, 'check');
-      const commit = async () => {
-        const v = inp.value.trim();
-        if (v) {
-          if (!S.states.includes(v)) { this.plugin.assignTone(v); S.states.push(v); await this.plugin.saveSettings(); }
-          this.f.state = v;
-        }
-        this.f.adding = false; this.renderStates();
-      };
+      const commit = () => this.addState(inp.value);
       inp.onkeydown = (e) => { if (e.key === 'Enter') { e.preventDefault(); commit(); } if (e.key === 'Escape') { e.preventDefault(); e.stopPropagation(); this.f.adding = false; this.renderStates(); } };
       okb.onmousedown = (e) => { e.preventDefault(); commit(); };
       inp.onblur = () => setTimeout(() => { if (this.f.adding) { this.f.adding = false; this.renderStates(); } }, 150);
       setTimeout(() => inp.focus(), 0);
     } else {
       const add = box.createEl('button', { cls: 'dsc-chip dsc-chip-add', text: '+ 값 추가' });
-      add.onclick = () => { this.f.adding = true; this.renderStates(); };
+      add.onclick = () => { this.f.adding = true; this.renderStates(); if (this.phone) this.showStateInput(); };
     }
   }
 

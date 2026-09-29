@@ -318,3 +318,35 @@
 .dsc-foot.is-phone .mod-cta { flex: 1; height: 44px; border-radius: 8px; }
 .dsc-del-link { align-self: center; height: 44px; padding: 0 16px; border: 0; color: var(--text-error); font-size: var(--font-ui-small); cursor: pointer; }
 :root:root .dsc-del-link { background: none; box-shadow: none; }
+
+/* ---------- 휴대폰: 카드 창을 바텀시트로 (옵시디언 확인창과 같은 방식) — 와이어 M03 ---------- */
+/* 키보드가 올라오면 시트 아래 끝이 키보드 위에 붙는다 (--keyboard-height: 옵시디언이 넣어 주는 키보드 높이) */
+.is-phone .modal-container.dsc-sheet { align-items: flex-end; bottom: var(--keyboard-height, 0px); }
+.is-phone .modal-container.dsc-sheet .modal.dsc-modal {
+  --modal-radius: var(--touch-radius-s) var(--touch-radius-s) 0 0;
+  --dialog-width: 100vw; --dialog-max-width: 100vw;
+  width: 100vw; max-width: 100vw; margin-top: auto;
+  max-height: calc(100% - var(--safe-area-inset-top) - 8px);
+  display: flex; flex-direction: column;
+  /* 홈 바 여백은 키보드가 없을 때만 */
+  padding-bottom: max(0px, calc(var(--safe-area-inset-bottom) - var(--keyboard-height, 0px)));
+}
+.is-phone .modal-container.dsc-sheet .modal.dsc-modal .modal-content { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+.dsc-modal .dsc-grab { flex: none; width: 36px; height: 5px; margin: 8px auto 0; border-radius: 3px; background: var(--background-modifier-border); }
+
+/* 키보드 바로 위 줄: 이전 타이틀 칩 (M03-1) · 상태값 추가 입력 (M03-3) */
+.dsc-modal .dsc-kbar {
+  flex: none; display: flex; align-items: center; gap: 8px; padding: 8px 12px;
+  overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;
+  background: var(--background-secondary); border-top: 1px solid var(--background-modifier-border);
+}
+.dsc-modal .dsc-kbar::-webkit-scrollbar { display: none; }
+.dsc-modal .dsc-kbar .dsc-kchip {
+  flex: none; display: block; height: 34px; line-height: 32px; padding: 0 14px; border-radius: 17px;
+  background: var(--background-primary); border: 1px solid var(--background-modifier-border); box-shadow: none;
+  font-size: var(--font-ui-small); font-weight: normal; color: var(--text-normal); white-space: nowrap;
+}
+.dsc-modal .dsc-kbar .dsc-kchip strong { font-weight: var(--font-bold); }
+.dsc-modal .dsc-kbar .dsc-kbar-input { flex: 1; min-width: 0; height: 36px; font-size: 16px; border-radius: 8px; background: var(--background-primary); border: 1px solid var(--interactive-accent); }
+.dsc-modal .dsc-kbar .dsc-kbar-ok { flex: none; height: 36px; padding: 0 16px; border-radius: 8px; }
+.dsc-modal .dsc-chip.dsc-chip-add.is-active { border-color: var(--interactive-accent); color: var(--interactive-accent); }
