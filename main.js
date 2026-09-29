@@ -616,9 +616,12 @@ class CardModal extends Modal {
       this.modalEl.addClass('dsc-phone');
       this.containerEl.addClass('dsc-sheet');
       this.modalEl.prepend(createDiv({ cls: 'dsc-grab' }));
-      // 키보드 바로 위 줄: 이전 타이틀 칩(M03-1) · 상태값 추가 입력(M03-3)
-      this.kbar = this.modalEl.createDiv({ cls: 'dsc-kbar' }); this.kbar.hidden = true; this.kbarMode = null;
-      this.contentEl.addEventListener('focusin', (e) => { const el = e.target; setTimeout(() => { if (el instanceof HTMLElement && el.isConnected) el.scrollIntoView({ block: 'nearest' }); }, 350); });
+      // 누른 입력칸이 키보드에 가려지지 않게: 누를 때 + 시트가 다 올라간 뒤 + 키보드가 다 올라온 뒤 다시 한 번
+      const reveal = () => { const el = document.activeElement; if (el instanceof HTMLElement && el.isConnected && this.contentEl.contains(el)) el.scrollIntoView({ block: 'nearest' }); };
+      this.contentEl.addEventListener('focusin', () => setTimeout(reveal, 350));
+      this.containerEl.addEventListener('transitionend', (e) => { if (e.target === this.containerEl) reveal(); });
+      this.onKeyboardShown = () => setTimeout(reveal, 50);
+      window.addEventListener('keyboardDidShow', this.onKeyboardShown);
     }
     this.titleEl.setText(edit ? '카드 수정' : '새 카드');
     const c = this.contentEl;
@@ -681,7 +684,10 @@ class CardModal extends Modal {
     this.modalEl.addEventListener('click', (e) => { if (this.f.ddOpen && !(e.target instanceof Element && e.target.closest('.dsc-dd'))) { this.f.ddOpen = false; this.renderCat(); } });
     if (!edit) setTimeout(() => this.titleInput.focus(), 0);
   }
-  onClose() { this.contentEl.empty(); }
+  onClose() {
+    if (this.onKeyboardShown) window.removeEventListener('keyboardDidShow', this.onKeyboardShown);
+    this.contentEl.empty();
+  }
 
   auto() {
     if (this.f.manual) return;
@@ -726,8 +732,6 @@ class CardModal extends Modal {
     return Array.from(seen.values()).filter((x) => !v || (x.title.includes(v) && x.title !== v)).slice(0, max);
   }
 
-  hideKbar() { if (!this.kbar) return; this.kbar.hidden = true; this.kbar.empty(); this.kbarMode = null; }
-
   // 휴대폰: 입력칸 아래에 이전 타이틀 칩 줄 (M03-1). 겹치는 게 없으면 접는다 = 새 타이틀
   renderTitleChips() {
     const v = this.titleInput.value.trim();
@@ -766,20 +770,6 @@ class CardModal extends Modal {
       this.f.state = v;
     }
     this.f.adding = false; this.renderStates();
-  }
-
-  // 휴대폰: 상태값 추가 입력을 키보드 위 줄에 (M03-3) — 키보드에 가려지지 않게
-  showStateInput() {
-    const bar = this.kbar; bar.empty(); bar.hidden = false; this.kbarMode = 'state'; bar.addClass('is-input');
-    const inp = bar.createEl('input', { cls: 'dsc-kbar-input', attr: { type: 'text', placeholder: '새 상태값', 'aria-label': '새 상태값', enterkeyhint: 'done' } });
-    const ok = bar.createEl('button', { cls: 'dsc-kbar-ok mod-cta', text: '추가' });
-    let done = false;
-    const commit = async () => { if (done) return; done = true; const v = inp.value; this.hideKbar(); await this.addState(v); };
-    inp.onkeydown = (e) => { if (e.key === 'Enter') { e.preventDefault(); commit(); } };
-    ok.onpointerdown = (e) => e.preventDefault();
-    ok.onclick = commit;
-    inp.onblur = () => setTimeout(() => { if (!done && this.kbarMode === 'state') { this.hideKbar(); this.f.adding = false; this.renderStates(); } }, 200);
-    setTimeout(() => inp.focus(), 0);
   }
 
   renderCat() {
@@ -829,9 +819,7 @@ class CardModal extends Modal {
         chip.onclick = () => { this.f.state = on ? null : s; this.renderStates(); };
       }
     }
-    if (this.f.adding && this.phone) {
-      box.createEl('button', { cls: 'dsc-chip dsc-chip-add is-active', text: '+ 값 추가' });
-    } else if (this.f.adding) {
+    if (this.f.adding) {
       const wrap = box.createDiv({ cls: 'dsc-chip dsc-chip-input' });
       const inp = wrap.createEl('input', { attr: { type: 'text', placeholder: '새 값', 'aria-label': '새 상태값' } });
       const okb = wrap.createEl('button', { cls: 'dsc-chip-ok', attr: { 'aria-label': '추가' } }); setIcon(okb, 'check');
@@ -842,7 +830,7 @@ class CardModal extends Modal {
       setTimeout(() => inp.focus(), 0);
     } else {
       const add = box.createEl('button', { cls: 'dsc-chip dsc-chip-add', text: '+ 값 추가' });
-      add.onclick = () => { this.f.adding = true; this.renderStates(); if (this.phone) this.showStateInput(); };
+      add.onclick = () => { this.f.adding = true; this.renderStates(); };
     }
   }
 

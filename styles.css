@@ -344,19 +344,6 @@
   background: var(--background-primary); border: 1px solid var(--background-modifier-border); box-shadow: none;
   font-size: var(--font-ui-small); font-weight: normal; color: var(--text-normal); white-space: nowrap;
 }
-/* 키보드 바로 위 줄: 상태값 추가 입력 (M03-3) */
-.dsc-modal .dsc-kbar {
-  flex: none; display: flex; align-items: center; gap: 8px; padding: 8px 12px;
-  overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;
-  background: var(--background-secondary); border-top: 1px solid var(--background-modifier-border);
-}
-.dsc-modal .dsc-kbar::-webkit-scrollbar { display: none; }
-.dsc-modal .dsc-kbar .dsc-kchip {
-  flex: none; display: block; height: 34px; line-height: 32px; padding: 0 14px; border-radius: 17px;
-  background: var(--background-primary); border: 1px solid var(--background-modifier-border); box-shadow: none;
-  font-size: var(--font-ui-small); font-weight: normal; color: var(--text-normal); white-space: nowrap;
-}
 .dsc-modal .dsc-kchip strong { font-weight: var(--font-bold); }
-.dsc-modal .dsc-kbar .dsc-kbar-input { flex: 1; min-width: 0; height: 36px; font-size: 16px; border-radius: 8px; background: var(--background-primary); border: 1px solid var(--interactive-accent); }
-.dsc-modal .dsc-kbar .dsc-kbar-ok { flex: none; height: 36px; padding: 0 16px; border-radius: 8px; }
-.dsc-modal .dsc-chip.dsc-chip-add.is-active { border-color: var(--interactive-accent); color: var(--interactive-accent); }
+/* 누른 입력칸을 보이게 스크롤할 때 키보드와 16px 띄운다 */
+.dsc-modal.dsc-phone input, .dsc-modal.dsc-phone textarea { scroll-margin: 16px 0; }
