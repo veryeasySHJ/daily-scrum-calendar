@@ -638,10 +638,12 @@ class CardModal extends Modal {
     this.titleInput = t.createEl('input', { cls: 'dsc-input', attr: { type: 'text', placeholder: '입력하거나 이전 타이틀 선택', id: 'dsc-title' } });
     this.titleInput.value = this.f.title;
     this.suggest = t.createDiv({ cls: 'dsc-suggest' }); this.suggest.hidden = true;
+    // 휴대폰: 이전 타이틀은 입력칸 바로 아래에 칩 줄로 펼친다 (M03-1)
+    if (this.phone) { this.titleChips = t.createDiv({ cls: 'dsc-title-chips' }); this.titleChips.hidden = true; }
     const suggest = () => (this.phone ? this.renderTitleChips() : this.renderSuggest());
     this.titleInput.oninput = () => { this.f.title = this.titleInput.value; suggest(); this.auto(); };
     this.titleInput.onfocus = suggest;
-    this.titleInput.onblur = () => setTimeout(() => { this.suggest.hidden = true; if (this.kbarMode === 'titles') this.hideKbar(); }, 150);
+    this.titleInput.onblur = () => setTimeout(() => { this.suggest.hidden = true; if (this.titleChips) { this.titleChips.hidden = true; this.titleChips.empty(); } }, 150);
     this.titleInput.onkeydown = (e) => { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); this.submit(); } };
 
     this.catBox = field('업무 분류').g.createDiv({ cls: 'dsc-dd' });
@@ -726,19 +728,18 @@ class CardModal extends Modal {
 
   hideKbar() { if (!this.kbar) return; this.kbar.hidden = true; this.kbar.empty(); this.kbarMode = null; }
 
-  // 휴대폰: 키보드 위 줄에 이전 타이틀 칩 (M03-1). 겹치는 게 없으면 줄을 숨긴다 = 새 타이틀
+  // 휴대폰: 입력칸 아래에 이전 타이틀 칩 줄 (M03-1). 겹치는 게 없으면 접는다 = 새 타이틀
   renderTitleChips() {
     const v = this.titleInput.value.trim();
     const hits = this.titleHits(v, 10);
-    if (!hits.length) { if (this.kbarMode === 'titles') this.hideKbar(); return; }
-    const bar = this.kbar; bar.empty(); bar.hidden = false; this.kbarMode = 'titles';
-    bar.removeClass('is-input');
+    const row = this.titleChips; row.empty();
+    row.hidden = !hits.length;
     for (const h of hits) {
-      const b = bar.createEl('button', { cls: 'dsc-kchip' });
+      const b = row.createEl('button', { cls: 'dsc-kchip' });
       const i = v ? h.title.indexOf(v) : -1;
       if (i >= 0) { b.appendText(h.title.slice(0, i)); b.createEl('strong', { text: v }); b.appendText(h.title.slice(i + v.length)); } else b.setText(h.title);
       b.onpointerdown = (e) => e.preventDefault(); // 입력칸 포커스(키보드) 유지
-      b.onclick = () => { this.titleInput.value = h.title; this.f.title = h.title; this.auto(); this.hideKbar(); this.titleInput.blur(); };
+      b.onclick = () => { this.titleInput.value = h.title; this.f.title = h.title; this.auto(); row.hidden = true; row.empty(); this.titleInput.blur(); };
     }
   }
 
