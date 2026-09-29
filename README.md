@@ -1,4 +1,4 @@
-# VinylC_calendar (데일리 스크럼 캘린더)
+# VinylC Calendar (데일리 스크럼 캘린더)
 
 하루 단위 업무 카드를 월간 달력에 쌓아 보는 옵시디언 플러그인입니다.
 카드 1장은 노트 1개이고, 업무 분류 색 · 상태값 · 산출경로(내부망/외부망)로 정리합니다.
@@ -17,7 +17,7 @@
 
 ## 설치
 
-옵시디언 설정 → 커뮤니티 플러그인 → 둘러보기에서 "VinylC_calendar"를 검색해 설치합니다.
+옵시디언 설정 → 커뮤니티 플러그인 → 둘러보기에서 "VinylC Calendar"를 검색해 설치합니다.
 
 직접 설치할 때는 [배포판](../../releases)에서 `main.js` · `manifest.json` · `styles.css`를 받아
 볼트의 `.obsidian/plugins/daily-scrum-calendar/` 폴더에 넣고, 커뮤니티 플러그인에서 켭니다.
