@@ -454,11 +454,15 @@ class CalendarView extends ItemView {
     bar.createEl('h2', { text: this.month.format('YYYY년 M월') });
     const nav = bar.createDiv({ cls: 'dsc-nav' });
     const btn = (label, aria, fn) => { const b = nav.createEl('button', { text: label, attr: { 'aria-label': aria } }); b.onclick = fn; };
-    btn('‹', '이전 달', () => { this.month = this.month.clone().subtract(1, 'month'); this.spread = null; this.render(); });
+    btn('‹', '이전 달', () => this.shiftMonth(-1));
     btn('오늘', '오늘', () => { this.month = moment().startOf('month'); this.spread = null; this.render(); });
-    btn('›', '다음 달', () => { this.month = this.month.clone().add(1, 'month'); this.spread = null; this.render(); });
+    btn('›', '다음 달', () => this.shiftMonth(1));
 
-    const grid = root.createDiv({ cls: 'dsc-grid' });
+    const grid = root.createDiv({ cls: 'dsc-grid' + (this.slideDir ? ` dsc-slide-${this.slideDir}` : '') });
+    this.slideDir = null;
+    // 날짜 칸 영역에서 좌우로 밀면 이전·다음 달. 이 영역에서만 옵시디언의 "밀어서 사이드 메뉴 열기"를 끈다
+    grid.dataset.ignoreSwipe = 'true';
+    this.attachSwipe(grid);
     for (const w of WEEKDAYS) grid.createDiv({ cls: 'dsc-wd', text: w });
     const start = this.month.clone().subtract(this.month.day(), 'days');
     const weeks = Math.ceil((this.month.day() + this.month.daysInMonth()) / 7);
@@ -480,7 +484,7 @@ class CalendarView extends ItemView {
         if (list.length > 3) dots.createSpan({ cls: 'dsc-mdot-more', text: '+' + (list.length - 3) });
         cell.setAttr('role', 'button');
         cell.setAttr('aria-label', `${d.format('M월 D일')} 카드 ${list.length}장`);
-        cell.onclick = () => { this.selected = iso; this.render(); };
+        cell.onclick = () => { if (this.justSwiped()) return; this.selected = iso; this.render(); };
         continue;
       }
       if (list.length === 1) cell.appendChild(this.cardEl(list[0]));
@@ -498,12 +502,40 @@ class CalendarView extends ItemView {
       }
       if (!list.length) cell.createDiv({ cls: 'dsc-hint', text: '+ 카드 추가' });
       cell.onclick = () => {
+        if (this.justSwiped()) return;
         if (this.spread) { this.spread = null; this.render(); return; }
         new CardModal(this.app, this.plugin, { date: iso }).open();
       };
     }
     if (narrow) this.renderDayList(root, byDate.get(this.selected) || []);
     requestAnimationFrame(() => this.fitChips());
+  }
+
+  shiftMonth(n) {
+    this.month = this.month.clone().add(n, 'month');
+    this.spread = null;
+    this.slideDir = n > 0 ? 'next' : 'prev';
+    this.render();
+  }
+
+  // 밀어서 넘긴 직후에 따라오는 누르기(날짜 선택·카드 열기)는 무시
+  justSwiped() { return !!this.swipedAt && Date.now() - this.swipedAt < 400; }
+
+  attachSwipe(el) {
+    let sx = 0, sy = 0, st = 0, track = false;
+    el.addEventListener('touchstart', (e) => {
+      if (e.touches.length !== 1) { track = false; return; }
+      const t = e.touches[0]; sx = t.clientX; sy = t.clientY; st = Date.now(); track = true;
+    }, { passive: true });
+    el.addEventListener('touchend', (e) => {
+      if (!track) return; track = false;
+      const t = e.changedTouches[0]; const dx = t.clientX - sx, dy = t.clientY - sy;
+      // 가로로 50px 이상, 세로보다 확실히 크게, 0.6초 안에 민 경우만
+      if (Math.abs(dx) < 50 || Math.abs(dx) < Math.abs(dy) * 1.5 || Date.now() - st > 600) return;
+      this.swipedAt = Date.now();
+      this.shiftMonth(dx < 0 ? 1 : -1);
+    });
+    el.addEventListener('touchcancel', () => { track = false; });
   }
 
   // 좁음 단계: 고른 날짜의 카드 목록 (M01 · M02)
@@ -544,7 +576,7 @@ class CalendarView extends ItemView {
     if (card.summary) el.createDiv({ cls: 'dsc-summary', text: card.summary });
     const open = onClick || ((e) => { e.stopPropagation(); this.openNote(card.file); });
     let pressTimer = null, pressed = false; // 길게 누르기 (휴대폰) — 누른 뒤 따라오는 클릭은 무시
-    el.onclick = (e) => { if (pressed) { e.preventDefault(); e.stopPropagation(); pressed = false; return; } open(e); };
+    el.onclick = (e) => { if (pressed || this.justSwiped()) { e.preventDefault(); e.stopPropagation(); pressed = false; return; } open(e); };
     el.onkeydown = (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(e); } };
     const showMenu = (pos) => {
       const menu = new Menu();

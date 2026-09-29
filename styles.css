@@ -350,3 +350,10 @@
 
 /* 휴대폰: 업무 분류 버튼 글자 시작점을 옵시디언 휴대폰 입력칸(좌우 16px)과 맞춘다 */
 .dsc-modal.dsc-phone .dsc-dd-btn { padding: 0 16px; }
+
+/* 달력 좌우 넘김: 넘긴 방향으로 살짝 밀려 들어오는 표시 */
+.dsc-grid { touch-action: pan-y; }
+.dsc-grid.dsc-slide-next { animation: dsc-slide-next 180ms ease-out; }
+.dsc-grid.dsc-slide-prev { animation: dsc-slide-prev 180ms ease-out; }
+@keyframes dsc-slide-next { from { transform: translateX(24px); opacity: 0.4; } to { transform: none; opacity: 1; } }
+@keyframes dsc-slide-prev { from { transform: translateX(-24px); opacity: 0.4; } to { transform: none; opacity: 1; } }
