@@ -1,0 +1,4 @@
+# 개인 설정·운영체제 파일은 올리지 않는다
+data.json
+.DS_Store
+node_modules/

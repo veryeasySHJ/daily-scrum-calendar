@@ -1,0 +1,10 @@
+{
+  "id": "daily-scrum-calendar",
+  "name": "데일리 스크럼 캘린더",
+  "version": "0.3.2",
+  "minAppVersion": "1.5.0",
+  "description": "하루 단위 업무 카드를 월간 달력에 쌓고, 업무 분류 색·상태값·산출경로로 정리한다. 카드 1개 = 노트 1개.",
+  "author": "SHJ",
+  "isDesktopOnly": false,
+  "authorUrl": "https://github.com/veryeasySHJ"
+}
