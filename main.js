@@ -1,7 +1,7 @@
 /* 데일리 스크럼 캘린더 — 옵시디언 플러그인 (빌드 없음, CommonJS)
  * 기준 문서: 기능정의 · 디자인 규칙표 (제작자 내부 문서)
  */
-const { Plugin, Platform, ItemView, MarkdownView, Modal, Menu, PluginSettingTab, Setting, Notice, TFile, normalizePath, setIcon, debounce, moment, parseYaml, stringifyYaml } = require('obsidian');
+const { Plugin, Platform, ItemView, MarkdownView, Modal, Menu, PluginSettingTab, Setting, Notice, TFile, TFolder, Vault, normalizePath, setIcon, debounce, moment, parseYaml, stringifyYaml } = require('obsidian');
 
 const VIEW_TYPE = 'daily-scrum-calendar';
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
@@ -174,18 +174,23 @@ module.exports = class DailyScrumCalendar extends Plugin {
     return true;
   }
 
+  // 카드 폴더 안의 노트만 (볼트 전체 목록은 보지 않는다)
+  cardFiles() {
+    const root = this.app.vault.getAbstractFileByPath(this.folderPath());
+    const out = [];
+    if (root instanceof TFolder) Vault.recurseChildren(root, (f) => { if (f instanceof TFile && f.extension === 'md') out.push(f); });
+    return out;
+  }
+
   async loadSummaries() {
-    for (const f of this.app.vault.getMarkdownFiles()) {
-      if (!this.inFolder(f)) continue;
+    for (const f of this.cardFiles()) {
       try { this.summaries.set(f.path, extractSummary(await this.app.vault.cachedRead(f))); } catch (e) { /* 읽기 실패 → 옛 summary 속성 사용 */ }
     }
   }
 
   getCards() {
-    const folder = this.folderPath() + '/';
     const out = [];
-    for (const f of this.app.vault.getMarkdownFiles()) {
-      if (!f.path.startsWith(folder)) continue;
+    for (const f of this.cardFiles()) {
       const fm = this.app.metadataCache.getFileCache(f)?.frontmatter;
       if (!fm) continue;
       const date = toDateStr(pick(fm, K.date, 'date'));

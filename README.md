@@ -1,5 +1,38 @@
 # VinylC Calendar (데일리 스크럼 캘린더)
 
+A month calendar for daily work cards. Each card is one note, color-coded by work category and tagged with a status and an output path (internal / external network).
+
+> The plugin interface is in Korean only. A Korean guide follows the English sections below.
+
+## Features
+
+- Month view: cards stack on the day they were created; tap a stack to spread it.
+- Create a card by clicking a date: title, work category, summary, status, and output path.
+- Work category is pre-selected from the previous card with the same title or from keywords you set. No AI or network service is used.
+- Edit a card from the pencil button in the note header, by right-clicking (long-pressing on mobile) a card, or with the command palette.
+- Pick the work category and status from a list in the note's Properties panel (can be turned off in settings).
+- Phones: date cells show category-color dots, and tapping a date lists that day's cards below the calendar.
+
+## Installation
+
+- **From Obsidian**: Settings → Community plugins → Browse → search for "VinylC Calendar" → Install → Enable.
+- **Manually**: download `main.js`, `manifest.json`, and `styles.css` from the latest [release](../../releases), put them in `<your vault>/.obsidian/plugins/daily-scrum-calendar/`, then enable the plugin under Settings → Community plugins.
+
+## Usage
+
+1. Open the calendar with the calendar icon in the left ribbon or the command "데일리 캘린더 열기" (Open daily calendar).
+2. Click a date to create a card.
+3. Click a card to open its note beside the calendar. Write details under "## 상세 업무내용" (details) and "## 세부일정" (schedule).
+4. Cards are saved in the folder set in settings (default `Daily Scrum/`) as `YYYY-MM-DD title.md`. The text under "## 요약" (summary) appears on the card.
+
+## Privacy
+
+The plugin makes no network requests and does not send any data outside your vault. It only reads and writes notes inside the card folder.
+
+---
+
+## 한국어 안내
+
 하루 단위 업무 카드를 월간 달력에 쌓아 보는 옵시디언 플러그인입니다.
 카드 1장은 노트 1개이고, 업무 분류 색 · 상태값 · 산출경로(내부망/외부망)로 정리합니다.
 
