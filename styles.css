@@ -3,9 +3,8 @@
 
 :root:root .dsc-root [hidden], :root:root .dsc-modal [hidden] { display: none; }
 
-/* 글자 공통 (2026-09-29): 줄 간격 130% · 자간 -1%. 스포카는 설정에서 켠 경우만 (기기에 없으면 옵시디언 글꼴) */
+/* 글자 공통 (2026-09-29): 줄 간격 130% · 자간 -1%. 글꼴은 옵시디언 글꼴을 그대로 쓴다 (스포카 폐기 0.3.6) */
 .dsc-root, .dsc-modal { letter-spacing: -0.01em; line-height: 1.3; }
-.dsc-font-spoqa .dsc-root, .dsc-modal.dsc-font-spoqa { font-family: 'Spoqa Han Sans Neo', var(--font-interface); }
 .dsc-modal input, .dsc-modal textarea, .dsc-modal button { font-family: inherit; letter-spacing: inherit; }
 
 .dsc-view { padding: 0; }

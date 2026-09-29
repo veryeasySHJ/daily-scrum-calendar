@@ -21,14 +21,13 @@ const SUMMARY_HEADING = '요약';
 const DEFAULTS = {
   folder: 'Daily Scrum',
   autoClassify: true,
-  spoqaFont: true,      // 스포카 한 산스 네오 (기기에 없으면 옵시디언 글꼴)
   propSelect: true,     // 카드 노트 속성 칸의 업무분류 · 상태값을 선택 버튼으로
   states: ['진행중', '대기중', '완료'],
   stateTones: {},
   categories: [
-    { name: '프로젝트', hue: 210, sat: 1, words: ['기획', '설계', '디자인', '개발'] },
-    { name: '회의', hue: 338, sat: 1, words: ['회의', '미팅', '리뷰', '공유'] },
-    { name: '개인', hue: 48, sat: 0.25, words: ['회고', '정리', '공부'] },
+    { name: '업무1', hue: 210, sat: 1, words: [] },
+    { name: '업무2', hue: 338, sat: 1, words: [] },
+    { name: '업무3', hue: 85, sat: 1, words: [] },
   ],
 };
 
@@ -153,6 +152,7 @@ module.exports = class DailyScrumCalendar extends Plugin {
     const saved = (await this.loadData()) || {};
     this.settings = Object.assign({}, JSON.parse(JSON.stringify(DEFAULTS)), saved);
     if (!this.settings.stateTones) this.settings.stateTones = {};
+    delete this.settings.spoqaFont; // 글꼴 설정 폐기 (0.3.6): 옵시디언 글꼴로 통일
     let changed = false;
     for (const s of this.settings.states) if (this.assignTone(s)) changed = true;
     if (changed) await this.saveData(this.settings);
@@ -414,7 +414,6 @@ class CalendarView extends ItemView {
     const c = this.containerEl.children[1];
     c.empty();
     c.addClass('dsc-view');
-    c.toggleClass('dsc-font-spoqa', !!this.plugin.settings.spoqaFont);
     this.root = c.createDiv({ cls: 'dsc-root' });
     this.ro = new ResizeObserver(() => this.updateSize());
     this.ro.observe(this.root);
@@ -611,7 +610,6 @@ class CardModal extends Modal {
   onOpen() {
     const edit = !!this.card;
     this.modalEl.addClass('dsc-modal');
-    this.modalEl.toggleClass('dsc-font-spoqa', !!this.plugin.settings.spoqaFont);
     this.titleEl.setText(edit ? '카드 수정' : '새 카드');
     const c = this.contentEl;
     c.empty();
@@ -830,11 +828,6 @@ class DscSettingTab extends PluginSettingTab {
     c.empty(); c.addClass('dsc-settings');
     new Setting(c).setName('저장 폴더').setDesc('카드 노트를 저장할 폴더입니다.')
       .addText((t) => t.setPlaceholder(DEFAULTS.folder).setValue(S.folder).onChange(async (v) => { S.folder = v.trim() || DEFAULTS.folder; await this.plugin.saveSettings(); }));
-    new Setting(c).setName('스포카 한 산스 네오 글꼴').setDesc('캘린더와 카드 창에 스포카 한 산스 네오를 씁니다. 기기에 설치되어 있지 않으면 옵시디언 글꼴로 보입니다.')
-      .addToggle((t) => t.setValue(!!S.spoqaFont).onChange(async (v) => {
-        S.spoqaFont = v; await this.plugin.saveSettings();
-        for (const leaf of this.app.workspace.getLeavesOfType(VIEW_TYPE)) leaf.view.containerEl.children[1].toggleClass('dsc-font-spoqa', v);
-      }));
     new Setting(c).setName('노트 속성 칸에서 선택하기').setDesc('카드 노트의 업무분류 · 상태값 칸을 누르면 목록에서 고르게 합니다. 끄면 옵시디언 기본 글자 입력칸으로 보입니다.')
       .addToggle((t) => t.setValue(!!S.propSelect).onChange(async (v) => { S.propSelect = v; await this.plugin.saveSettings(); this.plugin.updateNoteViews(); }));
     new Setting(c).setName('자동 분류').setDesc('타이틀로 업무 분류를 먼저 골라 둡니다. 같은 타이틀의 이전 카드 분류를 먼저 따르고, 없으면 아래 단어로 찾습니다.')
@@ -859,7 +852,7 @@ class DscSettingTab extends PluginSettingTab {
       if (this.openPicker === idx) this.picker(blk, cat);
     });
     const add = blk.createEl('button', { cls: 'dsc-cat-add', text: '+ 분류 추가' });
-    add.onclick = async () => { S.categories.push({ name: `분류 ${S.categories.length + 1}`, hue: farthestHue(S.categories), sat: 1, words: [] }); this.openPicker = S.categories.length - 1; await this.plugin.saveSettings(); this.display(); };
+    add.onclick = async () => { S.categories.push({ name: `업무${S.categories.length + 1}`, hue: farthestHue(S.categories), sat: 1, words: [] }); this.openPicker = S.categories.length - 1; await this.plugin.saveSettings(); this.display(); };
   }
 
   picker(parent, cat) {
