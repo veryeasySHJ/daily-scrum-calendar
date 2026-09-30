@@ -113,18 +113,25 @@ function setSection(body, heading, text, { stop = ANY_HEAD, prepend = false } = 
 const setSummarySection = (body, summary) => setSection(body, SUMMARY_HEADING, summary, { prepend: true });
 
 // 스크롤 영역 위·아래 가장자리를 옅게 (스크롤할 글이 더 있는 쪽만)
+// 가리기 기능(mask) 대신 시트 바탕색 → 투명 그라데이션 띠 두 개를 영역 위·아래에 겹친다 (옵시디언 예전 버전 호환)
 function attachFade(el) {
-  el.addClass('dsc-fade');
+  const host = el.parentElement;
+  host.addClass('dsc-fade-host');
+  const top = createDiv({ cls: 'dsc-fade-edge is-top' }), bot = createDiv({ cls: 'dsc-fade-edge is-bottom' });
+  el.after(top, bot);
   const update = () => {
-    el.toggleClass('is-fade-top', el.scrollTop > 1);
-    el.toggleClass('is-fade-bottom', el.scrollTop + el.clientHeight < el.scrollHeight - 1);
+    const x = `${el.offsetLeft}px`, w = `${el.clientWidth}px`;
+    top.setCssProps({ '--dsc-x': x, '--dsc-w': w, '--dsc-y': `${el.offsetTop}px` });
+    bot.setCssProps({ '--dsc-x': x, '--dsc-w': w, '--dsc-y': `${el.offsetTop + el.clientHeight - 24}px` });
+    top.toggleClass('is-on', el.scrollTop > 1);
+    bot.toggleClass('is-on', el.scrollTop + el.clientHeight < el.scrollHeight - 1);
   };
   el.addEventListener('scroll', update, { passive: true });
   el.addEventListener('input', update);
   const ro = new ResizeObserver(update);
   ro.observe(el);
   setTimeout(update, 0);
-  return () => ro.disconnect();
+  return () => { ro.disconnect(); top.remove(); bot.remove(); };
 }
 
 // 누른 자리 바로 아래 작은 팝업 (아래 공간이 모자라면 위). 바깥을 누르거나 Esc로 닫힌다
@@ -1438,3 +1445,5 @@ class DscSettingTab extends PluginSettingTab {
     }
   }
 }
+
+/* nosourcemap */

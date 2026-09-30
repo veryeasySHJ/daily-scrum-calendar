@@ -351,7 +351,7 @@
 .dsc-modal .dsc-grab { flex: none; width: 36px; height: 5px; margin: 8px auto 0; border-radius: 3px; background: var(--background-modifier-border); }
 
 /* 입력칸 아래 이전 타이틀 칩 줄 (M03-1, 휴대폰) */
-.dsc-modal .dsc-title-chips { display: flex; gap: 8px; margin-top: 8px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+.dsc-modal .dsc-title-chips { display: flex; gap: 8px; margin-top: 8px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
 .dsc-modal .dsc-title-chips::-webkit-scrollbar { display: none; }
 .dsc-modal .dsc-title-chips .dsc-kchip {
   flex: none; display: block; height: 32px; line-height: 30px; padding: 0 12px; border-radius: 16px;
@@ -400,14 +400,15 @@
 .dsc-press-pop .dsc-pop-icon svg { width: 20px; height: 20px; }
 @keyframes dsc-fade-in { from { opacity: 0; } to { opacity: 1; } }
 
-/* 스크롤 가장자리 흐림: 스크롤할 글이 더 있는 쪽만 24px 옅게 (밝은·어두운 테마 공통) */
-.dsc-fade {
-  --dsc-ft: 0px; --dsc-fb: 0px;
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 var(--dsc-ft), #000 calc(100% - var(--dsc-fb)), transparent 100%);
-  mask-image: linear-gradient(to bottom, transparent 0, #000 var(--dsc-ft), #000 calc(100% - var(--dsc-fb)), transparent 100%);
+/* 스크롤 가장자리 흐림: 스크롤할 글이 더 있는 쪽만 24px, 시트 바탕색 → 투명 띠를 겹친다 (밝은·어두운 테마 공통) */
+.dsc-fade-host { position: relative; }
+.dsc-fade-edge {
+  position: absolute; left: var(--dsc-x, 0); top: var(--dsc-y, 0); width: var(--dsc-w, 100%); height: 24px;
+  z-index: 1; pointer-events: none; opacity: 0; transition: opacity 150ms ease;
 }
-.dsc-fade.is-fade-top { --dsc-ft: 24px; }
-.dsc-fade.is-fade-bottom { --dsc-fb: 24px; }
+.dsc-fade-edge.is-top { background: linear-gradient(to bottom, var(--modal-background, var(--background-primary)), transparent); }
+.dsc-fade-edge.is-bottom { background: linear-gradient(to top, var(--modal-background, var(--background-primary)), transparent); }
+.dsc-fade-edge.is-on { opacity: 1; }
 
 /* ---------- 일정 상세 시트 (휴대폰, 바로 수정) ---------- */
 /* 옵시디언 기본 ✕ · 제목 줄 숨김 (1.13부터 ✕ 이름이 modal-header-button, 이전 버전은 modal-close-button) */
