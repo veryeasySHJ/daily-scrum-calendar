@@ -30,6 +30,10 @@ A month calendar for daily work cards. Each card is one note, color-coded by wor
 
 The plugin makes no network requests and does not send any data outside your vault. It only reads and writes notes inside the card folder.
 
+## Authors
+
+Hyunjoo Shin, Suyeon Hwang
+
 ---
 
 ## 한국어 안내
@@ -106,6 +110,10 @@ created: 2026-09-23T10:30
   옵시디언 업데이트로 화면 구조가 바뀌면 버튼이 보이지 않을 수 있으며, 그때도 노트 값은 그대로이고 기본 글자 입력칸으로 보입니다.
 - 이 플러그인은 인터넷에 연결하지 않고, 볼트 밖으로 데이터를 보내지 않습니다.
 - 화면 글자는 한국어만 지원합니다.
+
+## 만든 사람
+
+Hyunjoo Shin, Suyeon Hwang
 
 ## 사용 허락
 

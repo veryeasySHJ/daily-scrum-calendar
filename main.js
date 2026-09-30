@@ -774,7 +774,10 @@ class CalendarView extends ItemView {
       if (!(e.target instanceof Element && e.target.closest('.dsc-press-pop'))) close();
     });
     const h = pop.offsetHeight, w = 180;
-    const bottom = window.innerHeight - 8;
+    // 떠 있는 하단 탭 바 밑으로 들어가지 않게 (탭 바가 있으면 그 위 끝까지만)
+    const nav = document.querySelector('.mobile-navbar');
+    const navTop = nav instanceof HTMLElement && nav.offsetParent ? nav.getBoundingClientRect().top : window.innerHeight;
+    const bottom = Math.min(window.innerHeight, navTop) - 8;
     const top = r.bottom + 8 + h <= bottom ? r.bottom + 8 : Math.max(8, r.top - 8 - h);
     const left = Math.min(Math.max(8, r.left), window.innerWidth - w - 8);
     pop.setCssProps({ '--dsc-x': `${left}px`, '--dsc-y': `${top}px`, '--dsc-w': `${w}px` });
@@ -1446,4 +1449,5 @@ class DscSettingTab extends PluginSettingTab {
   }
 }
 
+/* nosourcemap */
 /* nosourcemap */

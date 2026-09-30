@@ -468,3 +468,30 @@
 }
 :root:root .dsc-fab { color: #fff; background: var(--interactive-accent); box-shadow: 0 4px 12px hsla(var(--interactive-accent-hsl), 0.35); }
 .dsc-fab svg { width: 24px; height: 24px; stroke-width: 2.4; }
+
+/* ---------- 휴대폰: 하단 네비게이션 여백 · 글자 크기 (2026-09-30) ---------- */
+/* 떠 있는 하단 탭 바 뒤로 마지막 카드가 들어가지 않게: 옵시디언이 정한 아래 공간(홈 바 + 탭 바, 키보드가 있으면 줄어듦) + 16 */
+:root:root .is-phone .dsc-root { padding-bottom: calc(var(--view-bottom-spacing, 0px) + 16px); }
+
+/* 글자: 옵시디언 '글자 크기' 설정(기본 16)을 따른다. 괄호 안은 기본 설정일 때 크기.
+ * 목록 카드 · 플래그 · 목록 머리 · 날짜 숫자 · 상세 본문은 옵시디언 휴대폰 글자에 맞춰 키움, 나머지는 크기 유지.
+ * 달력 일정 막대(7 · +N 8)는 막대 높이가 고정이라 그대로 둔다 (사용자 결정 "캘린더 폰트는 그대로") */
+.is-phone .dsc-root, .is-phone .dsc-modal, .is-phone .dsc-press-layer, .is-phone .dsc-pop { --dsc-fs: var(--font-text-size, 16px); }
+.is-phone .dsc-toolbar h2 { font-size: calc(var(--dsc-fs) * 1.25); }                  /* 20 */
+.is-phone .dsc-nav-today { font-size: calc(var(--dsc-fs) * 0.8125); }                /* 13 */
+.is-phone .is-narrow .dsc-day { font-size: calc(var(--dsc-fs) * 0.875); }             /* 12 → 14 */
+.is-phone .dsc-daylist-date { font-size: calc(var(--dsc-fs) * 1.125); }               /* 16 → 18 */
+.is-phone .dsc-daylist-count { font-size: calc(var(--dsc-fs) * 0.875); }              /* 12 → 14 */
+.is-phone .dsc-daylist-add { height: auto; min-height: 30px; font-size: calc(var(--dsc-fs) * 0.875); } /* 12 → 14 */
+.is-phone .dsc-card .dsc-title { font-size: var(--dsc-fs); }                          /* 14 → 16 */
+.is-phone .dsc-card .dsc-summary { font-size: calc(var(--dsc-fs) * 0.875); }          /* 12 → 14 */
+.is-phone .dsc-card .dsc-tag { height: auto; min-height: 24px; padding: 4px 8px; font-size: calc(var(--dsc-fs) * 0.75); } /* 10 → 12 */
+.is-phone .dsc-card .dsc-more { font-size: calc(var(--dsc-fs) * 0.75); }             /* 10 → 12 */
+.is-phone .dsc-pop .dsc-pop-item { font-size: calc(var(--dsc-fs) * 0.9375); }        /* 15 */
+.is-phone .dsc-press-pop .dsc-pop-item { font-size: var(--dsc-fs); }                 /* 16 */
+.is-phone .dsc-modal .dsc-chip, .is-phone .dsc-modal .dsc-chip-input input { font-size: calc(var(--dsc-fs) * 0.875); } /* 14 */
+.is-phone .dsc-detail textarea.dsc-dt-title { font-size: calc(var(--dsc-fs) * 1.5); } /* 24 */
+.is-phone .dsc-detail .dsc-dt-date, .is-phone .dsc-detail .dsc-dt-check { font-size: var(--dsc-fs); } /* 16 */
+.is-phone .dsc-detail .dsc-dt-pill { font-size: calc(var(--dsc-fs) * 0.875); }       /* 14 */
+.is-phone .dsc-detail .dsc-dt-label { font-size: calc(var(--dsc-fs) * 0.75); }       /* 12 */
+.is-phone .dsc-detail textarea.dsc-dt-text { font-size: var(--dsc-fs); }              /* 15 → 16 */
