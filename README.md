@@ -9,9 +9,10 @@ A month calendar for daily work cards. Each card is one note, color-coded by wor
 - Month view: cards stack on the day they were created; tap a stack to spread it.
 - Create a card by clicking a date: title, work category, summary, status, and output path.
 - Work category is pre-selected from the previous card with the same title or from keywords you set. No AI or network service is used.
-- Edit a card from the pencil button in the note header, by right-clicking (long-pressing on mobile) a card, or with the command palette.
+- Edit a card from the pencil button in the note header, by right-clicking a card, or with the command palette.
 - Pick the work category and status from a list in the note's Properties panel (can be turned off in settings).
-- Phones: date cells show category-color dots, and tapping a date lists that day's cards below the calendar.
+- Phones: date cells show small event bars (status dot + title, category color), and tapping a date lists that day's cards below the calendar.
+- Phones: tap a card to edit it in a bottom sheet (title, date, category, status, output path, summary, details, schedule); long-press a card to delete it.
 
 ## Installation
 
@@ -39,14 +40,16 @@ The plugin makes no network requests and does not send any data outside your vau
 ## 할 수 있는 것
 
 - **월간 달력**: 날짜마다 그날 만든 카드가 쌓입니다. 여러 장이면 겹쳐 보이고, 누르면 펼쳐집니다.
-- **카드 만들기**: 날짜를 누르면 새 카드 창이 열립니다. 타이틀 · 업무 분류 · 요약 · 상태값 · 산출경로를 넣습니다.
+- **일정 만들기**: 날짜를 누르면 새 일정 창이 열립니다. 타이틀 · 업무 분류 · 요약 · 상태값 · 산출경로를 넣습니다.
   - 이전에 쓴 타이틀을 목록에서 고를 수 있습니다.
   - 업무 분류는 같은 타이틀의 이전 카드, 또는 분류마다 정한 단어로 먼저 골라 둡니다 (인공지능·외부 서비스 없이 동작).
 - **카드 색**: 업무 분류마다 색을 정하면 카드 바탕색으로 보입니다.
-- **칩**: 카드 위에 상태값(진행중 · 대기중 · 완료 등)과 산출경로(내부망 · 외부망)가 값마다 다른 색으로 보입니다.
-- **카드 수정**: 카드 노트 오른쪽 위 연필 버튼, 달력 카드 우클릭(휴대폰은 길게 누르기), 명령 "지금 열린 카드 수정".
+- **플래그**: 카드 위에 상태값(색 점: 진행중 초록 · 대기중 주황 · 완료 회색)과 산출경로(내부망 · 외부망)가 보입니다.
+- **일정 수정**: 일정 노트 오른쪽 위 연필 버튼, 달력 카드 우클릭, 명령 "지금 열린 일정 수정".
 - **노트 속성 칸**: 카드 노트의 업무분류 · 상태값을 목록에서 고를 수 있습니다 (설정에서 끌 수 있음).
-- **휴대폰**: 화면이 좁으면 날짜 칸에 업무 분류 색 점만 보이고, 날짜를 누르면 아래에 그날 카드 목록이 나옵니다.
+- **휴대폰**: 화면이 좁으면 날짜 칸에 일정 막대(상태값 색 점 + 타이틀, 업무 분류 색)가 보이고, 날짜를 누르면 아래에 그날 일정 목록이 나옵니다.
+  - 카드를 누르면 아래에서 올라오는 시트에서 바로 수정합니다 (타이틀 · 날짜 · 업무 분류 · 상태값 · 산출경로 · 요약 · 상세 업무내용 · 세부일정).
+  - 카드를 꾹 누르면 삭제할 수 있습니다.
 
 ## 설치
 
@@ -58,8 +61,8 @@ The plugin makes no network requests and does not send any data outside your vau
 ## 사용법
 
 1. 왼쪽 달력 아이콘 또는 명령 "데일리 캘린더 열기"로 달력을 엽니다.
-2. 날짜를 눌러 카드를 만듭니다.
-3. 카드를 누르면 옆에 카드 노트가 열립니다. 본문에 상세 업무내용과 세부일정을 적습니다.
+2. 날짜를 눌러 일정을 만듭니다.
+3. 카드를 누르면 옆에 일정 노트가 열립니다 (휴대폰은 수정 시트). 본문에 상세 업무내용과 세부일정을 적습니다.
 
 ## 카드 노트 형식
 
@@ -88,7 +91,7 @@ created: 2026-09-23T10:30
 - `## 요약` 아래 내용이 달력 카드에 두 줄까지 보입니다.
 - `created`는 같은 날 카드의 순서(맨 위 = 최근)에 쓰이며 노트 속성 칸에서는 숨겨집니다.
 - 예전 형식(`date` · `title` · `work-category` · `states` · `network` · `summary`)도 읽습니다.
-  명령 "예전 형식 카드 노트를 새 형식으로 바꾸기"로 한 번에 바꿀 수 있습니다.
+  명령 "예전 형식 일정 노트를 새 형식으로 바꾸기"로 한 번에 바꿀 수 있습니다.
 
 ## 설정
 
