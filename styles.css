@@ -90,6 +90,8 @@
 .dsc-title { font-size: 14px; font-weight: var(--font-medium); letter-spacing: -0.02em; line-height: 1.3; color: #1a1a1a; }
 .theme-dark .dsc-title { color: var(--text-normal); }
 .dsc-summary { font-size: 12px; line-height: 1.5; letter-spacing: 0; color: var(--text-muted); }
+/* 기간 줄 (1.1.0 목록 카드): 기간이 있는 일정만 타이틀 바로 아래 · 12 보통 · 흐린 글자 */
+.dsc-period { font-size: 12px; line-height: 1.3; letter-spacing: 0; color: var(--text-faint); }
 .is-compact .dsc-card { padding: 8px 4px; gap: 4px; border-radius: 6px; }
 .is-compact .dsc-card.is-selected { padding: 7px 3px; } /* 테두리 2px - 1 보정 */
 .is-compact .dsc-summary { display: none; }
@@ -145,20 +147,9 @@
 /* ---------- modal ---------- */
 .dsc-modal { width: min(480px, calc(100vw - 32px)); }
 .dsc-modal .modal-content { display: flex; flex-direction: column; gap: 20px; }
-.dsc-field { display: flex; flex-direction: column; gap: 8px; }
-.dsc-lrow { display: flex; align-items: center; justify-content: space-between; }
-.dsc-label { font-size: var(--font-ui-small); color: var(--text-muted); }
-.dsc-req { color: var(--text-normal); font-weight: var(--font-bold); }
 .dsc-input { width: 100%; }
-.dsc-input[readonly] { background: var(--background-primary-alt); color: var(--text-normal); }
-.dsc-input.is-invalid { border-color: var(--text-error); }
-.dsc-textarea { height: 60px; resize: none; }
 .dsc-help { font-size: var(--font-ui-smaller); color: var(--text-faint); }
-.dsc-link { border: 0; padding: 0; height: auto; font-size: var(--font-ui-smaller); color: var(--text-muted); cursor: pointer; }
-:root:root .dsc-link { background: none; box-shadow: none; }
-.dsc-link.is-active { color: var(--interactive-accent); font-weight: var(--font-medium); }
 
-.dsc-combo { position: relative; }
 .dsc-suggest { position: absolute; left: 0; right: 0; top: calc(var(--input-height) + 4px); z-index: 20; padding: 4px 0; background: var(--background-primary); border: 1px solid var(--background-modifier-border); border-radius: var(--radius-m); box-shadow: var(--shadow-l); }
 .dsc-suggest-sec { padding: 4px 12px; font-size: var(--font-ui-smaller); color: var(--text-faint); }
 .dsc-suggest-item { display: flex; justify-content: space-between; width: 100%; height: auto; padding: 8px 12px; border-radius: 0; font-size: var(--font-ui-small); color: var(--text-normal); font-weight: normal; }
@@ -169,13 +160,6 @@
 .dsc-suggest-new { color: var(--text-muted); justify-content: flex-start; }
 
 /* dropdown */
-.dsc-dd { position: relative; }
-.dsc-dd-btn { display: flex; align-items: center; gap: 8px; width: 100%; height: var(--input-height); padding: 0 8px; border: 1px solid var(--background-modifier-border); font-size: var(--font-ui-small); color: var(--text-normal); font-weight: normal; }
-:root:root .dsc-dd-btn { background: var(--background-primary); box-shadow: none; }
-.dsc-dd-btn.is-open { border-color: var(--interactive-accent); }
-:root:root .dsc-dd-btn.is-open { box-shadow: 0 0 0 1px var(--interactive-accent); }
-.dsc-dd-label { flex: 1; text-align: left; }
-.dsc-dd-label.is-empty { color: var(--text-faint); }
 .dsc-dd-chev { display: flex; color: var(--text-muted); }
 .dsc-dd-chev svg { width: 14px; height: 14px; }
 .dsc-dot { flex: none; width: 10px; height: 10px; border-radius: 50%; border: 1px solid var(--text-faint); background: hsl(var(--dsc-h, 0) calc(45% * var(--dsc-s, 1)) 83%); }
@@ -192,9 +176,6 @@
 .dsc-chip-dot { flex: none; width: 7px; height: 7px; border-radius: 50%; background: var(--dsc-t, var(--text-faint)); }
 .dsc-chip:not(.is-on):not(.dsc-chip-add):not(.dsc-chip-input) { padding-left: 12px; }
 .dsc-chip-check { display: flex; } .dsc-chip-check svg { width: 14px; height: 14px; stroke-width: 2.4; }
-.dsc-chip-x { font-size: 12px; font-weight: var(--font-bold); color: var(--text-faint); padding-left: 0; }
-.dsc-chip.is-on .dsc-chip-x { color: #fff; }
-.dsc-chip.is-editing { cursor: default; }
 .dsc-chip-add { border-style: dashed; color: var(--text-faint); }
 .dsc-chip-input { border: 1.5px solid var(--interactive-accent); padding: 0 8px 0 12px; gap: 8px; cursor: text; }
 .dsc-chip-input input { width: 72px; padding: 0; height: 24px; font-size: 14px; color: var(--text-normal); }
@@ -208,8 +189,6 @@
 .dsc-check input[type="checkbox"] { margin: 0; }
 
 .dsc-foot { display: flex; justify-content: flex-end; gap: 8px; }
-.dsc-foot .dsc-del { margin-right: auto; color: var(--text-error); }
-.dsc-input[type="date"] { height: var(--input-height); }
 
 /* 카드 노트: 만든 시각(created)은 저장하되 속성 칸에서 숨긴다 */
 .dsc-card-note .metadata-property[data-property-key="created"] { display: none; }
@@ -265,6 +244,8 @@
 .dsc-preset { width: 18px; height: 18px; padding: 0; border-radius: 50%; border: 1px solid var(--background-modifier-border-hover); }
 :root:root .dsc-preset { background: hsl(var(--dsc-h) calc(45% * var(--dsc-s, 1)) 95.5%); box-shadow: none; }
 .dsc-preset.is-on { border: 2px solid var(--interactive-accent); }
+.dsc-state-row { display: flex; align-items: center; gap: 12px; min-height: 32px; }
+.dsc-state-name { flex: 1; font-size: var(--font-ui-small); color: var(--text-normal); }
 
 /* ---------- 좁음 단계 (휴대폰·사이드바, 날짜 칸 폭 72px 미만) — 와이어 M01 · M02 ---------- */
 .dsc-root.is-narrow { padding: 8px 16px 16px; }
@@ -291,6 +272,14 @@
 .dsc-ev-title { flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 7px; font-weight: var(--font-medium); line-height: 9px; letter-spacing: 0; color: #87888e; }
 .dsc-ev-more { font-size: 8px; font-weight: var(--font-medium); line-height: 10px; letter-spacing: 0; text-align: right; color: var(--text-muted); }
 .is-today .dsc-ev-more { color: #fff; }
+/* 기간 일정 막대 (C안): 날짜 칸을 가로지르는 이어진 막대. 칸에는 그 자리만 비워 두고(dsc-ev-space) 막대는 칸 위에 겹친다
+ * 칸 위 끝에서 4(위 여백) + 24(날짜) + 4(사이) = 32 아래부터, 줄마다 13 + 2 */
+.is-narrow .dsc-cell { grid-row: var(--dsc-r); grid-column: var(--dsc-c); }
+.dsc-ev-space { flex: none; height: 13px; }
+.dsc-ev.dsc-ev-span {
+  grid-row: var(--dsc-r); grid-column: var(--dsc-c1) / var(--dsc-c2); align-self: start;
+  margin: calc(32px + var(--dsc-lane, 0) * 15px) 3px 0; padding: 2px 4px; z-index: 1; pointer-events: none;
+}
 
 .dsc-daylist { display: flex; flex-direction: column; gap: 12px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--background-modifier-border); }
 .dsc-daylist-head { display: flex; align-items: center; gap: 8px; }
@@ -324,15 +313,6 @@
 /* 길게 누르기 중 글자 선택·확대 메뉴가 뜨지 않게 */
 .dsc-card { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
 
-/* ---------- 휴대폰 카드 창 (바텀시트) — 와이어 M03: 크기는 PC와 같고 간격만 넓힘 ---------- */
-.dsc-modal.dsc-phone .modal-content { gap: 24px; }
-.dsc-modal.dsc-phone .dsc-field { gap: 8px; }
-.dsc-modal.dsc-phone .dsc-chiprow { gap: 12px; }
-/* 아래 버튼은 만들기·저장 하나 (취소는 위쪽 ✕) */
-.dsc-foot.is-phone .mod-cta { flex: 1; height: 44px; border-radius: 8px; }
-.dsc-del-link { align-self: center; height: 44px; padding: 0 16px; border: 0; color: var(--text-error); font-size: var(--font-ui-small); cursor: pointer; }
-:root:root .dsc-del-link { background: none; box-shadow: none; }
-
 /* ---------- 휴대폰: 카드 창을 바텀시트로 (옵시디언 확인창과 같은 방식) — 와이어 M03 ---------- */
 /* 키보드가 올라오면 시트 아래 끝이 키보드 위에 붙는다 (--keyboard-height: 옵시디언이 넣어 주는 키보드 높이) */
 .is-phone .modal-container.dsc-sheet { align-items: flex-end; bottom: var(--keyboard-height, 0px); transition: bottom 250ms cubic-bezier(0.25, 0.1, 0.25, 1); }
@@ -361,9 +341,6 @@
 .dsc-modal .dsc-kchip strong { font-weight: var(--font-bold); }
 /* 누른 입력칸을 보이게 스크롤할 때 키보드와 16px 띄운다 */
 .dsc-modal.dsc-phone input, .dsc-modal.dsc-phone textarea { scroll-margin: 16px 0; }
-
-/* 휴대폰: 업무 분류 버튼 글자 시작점을 옵시디언 휴대폰 입력칸(좌우 16px)과 맞춘다 */
-.dsc-modal.dsc-phone .dsc-dd-btn { padding: 0 16px; }
 
 /* 달력 좌우 넘김: 넘긴 방향으로 살짝 밀려 들어오는 표시 */
 .dsc-grid { touch-action: pan-y; }
@@ -419,7 +396,8 @@
 }
 .dsc-detail .dsc-dt-top { flex: none; padding: 8px 20px 0; touch-action: none; }
 .dsc-detail .dsc-dt-top .dsc-grab { margin: 0 auto; }
-.dsc-dt-actions { display: flex; justify-content: flex-end; height: 32px; margin-top: 4px; }
+.dsc-dt-actions { display: flex; align-items: center; justify-content: space-between; height: 32px; margin-top: 4px; }
+.dsc-dt-kind { font-size: 14px; color: var(--text-muted); }
 .dsc-dt-more { display: grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 0; border-radius: 8px; color: var(--text-normal); }
 :root:root .dsc-dt-more { background: none; box-shadow: none; }
 .dsc-dt-more svg { width: 22px; height: 22px; }
@@ -469,6 +447,62 @@
 :root:root .dsc-fab { color: #fff; background: var(--interactive-accent); box-shadow: 0 4px 12px hsla(var(--interactive-accent-hsl), 0.35); }
 .dsc-fab svg { width: 24px; height: 24px; stroke-width: 2.4; }
 
+/* ---------- 일정 창 1.1.0: 새 일정 = 일정 상세 (휴대폰 바텀시트 · PC 가운데 창) ---------- */
+.dsc-detail textarea.dsc-dt-title.is-invalid::placeholder { color: var(--text-error); }
+.dsc-dt-title-wrap { position: relative; }
+/* 날짜 줄: 기간이면 두 줄 (시작 · ~ 끝나는 날). 고르는 동안 연보라 바탕 */
+.dsc-dt-row.dsc-dt-daterow { align-items: flex-start; padding: 12px 0; cursor: pointer; }
+.dsc-dt-daterow.is-picking { margin: 0 -8px; padding: 12px 8px; border-radius: 8px; background: hsla(var(--interactive-accent-hsl), 0.06); }
+.dsc-dt-date { display: flex; flex-direction: column; gap: 8px; }
+.dsc-dt-date .is-hint { color: var(--text-faint); font-weight: normal; }
+/* 데이트 피커: 날짜 줄 바로 아래로 펼침 (위 8 · 아래 16 · 줄 사이 8, 날짜 칸 40, 선택 원 32) */
+.dsc-dp { padding: 8px 0 16px; }
+.dsc-dp-head { display: flex; align-items: center; height: 32px; padding: 0 8px 0 16px; gap: 4px; }
+.dsc-dp-title { flex: 1; font-size: 15px; font-weight: var(--font-bold); color: var(--text-normal); }
+.dsc-dp-nav { display: grid; place-items: center; width: 32px; height: 32px; padding: 0; border: 0; color: var(--text-muted); cursor: pointer; }
+:root:root .dsc-dp-nav { background: none; box-shadow: none; }
+.dsc-dp-nav svg { width: 18px; height: 18px; }
+.dsc-dp-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); row-gap: 8px; margin-top: 8px; }
+.dsc-dp-wd { display: grid; place-items: center; height: 24px; font-size: 12px; color: var(--text-faint); }
+.dsc-dp-day { position: relative; display: grid; place-items: center; height: 40px; padding: 0; border: 0; border-radius: 0; font-size: 15px; font-weight: normal; color: var(--text-normal); cursor: pointer; }
+:root:root .dsc-dp-day { background: none; box-shadow: none; }
+.dsc-dp-day span { position: relative; z-index: 1; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; }
+.dsc-dp-day.is-out { color: var(--text-faint); }
+.dsc-dp-day.in-range::before { content: ""; position: absolute; top: 4px; bottom: 4px; left: 0; right: 0; background: hsla(var(--interactive-accent-hsl), 0.12); }
+.dsc-dp-day.is-start::before { left: 50%; }
+.dsc-dp-day.is-end::before { right: 50%; }
+.dsc-dp-day.is-picked span { background: var(--interactive-accent); color: var(--text-on-accent); font-weight: var(--font-medium); }
+.dsc-dp-len { margin-top: 8px; padding-right: 8px; text-align: right; font-size: 12px; color: var(--text-muted); }
+/* 내용 한 칸: 보기 = 서식 적용 모양 (제목 17 굵게 · 목록 · 할 일 상자 · 시간 줄은 시각만 흐리게) */
+.dsc-md { font-size: 15px; line-height: 1.6; color: var(--text-normal); word-break: keep-all; cursor: text; }
+.dsc-md > :first-child { margin-top: 0; }
+.dsc-md > :last-child { margin-bottom: 0; }
+.dsc-md p, .dsc-md ul, .dsc-md ol, .dsc-md blockquote, .dsc-md pre { margin: 0 0 4px; }
+.dsc-md h1, .dsc-md h2, .dsc-md h3, .dsc-md h4, .dsc-md h5, .dsc-md h6 { margin: 4px 0; font-size: 17px; font-weight: var(--font-bold); line-height: 1.4; letter-spacing: -0.02em; }
+.dsc-md ul, .dsc-md ol { padding-inline-start: 20px; }
+/* 목록 들여쓰기는 옵시디언 노트보다 얕게: 점 · 할 일 상자가 글 시작선 바로 왼쪽에 */
+:root:root .dsc-md li { margin-inline-start: 0; }
+:root:root .dsc-md .task-list-item-checkbox { margin-inline-start: -20px; margin-inline-end: 6px; }
+:root:root .dsc-md ul.contains-task-list, :root:root .dsc-md li.task-list-item { list-style: none; }
+.dsc-md .dsc-time { color: var(--text-faint); font-weight: var(--font-medium); }
+.dsc-md-empty { color: var(--text-faint); }
+.dsc-dt-col .dsc-help { margin-top: 4px; font-size: 12px; color: var(--text-faint); }
+.dsc-dt-body textarea.dsc-dt-text { min-height: 72px; line-height: 1.6; }
+/* 서식 버튼 (휴대폰, 입력 중일 때만 칸 위쪽): 보이는 높이 28 · 누르는 영역 44 */
+.dsc-fmt { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+.dsc-fmt-btn { position: relative; display: inline-flex; align-items: center; gap: 4px; height: 28px; padding: 0 10px; border: 1px solid var(--background-modifier-border); border-radius: 6px; font-size: 13px; font-weight: normal; color: var(--text-normal); cursor: pointer; }
+:root:root .dsc-fmt-btn { background: var(--background-primary); box-shadow: none; }
+.dsc-fmt-btn::before { content: ""; position: absolute; inset: -8px 0; }
+.dsc-fmt-sym { font-weight: var(--font-bold); }
+.dsc-fmt-btn.is-on { border-color: var(--interactive-accent); color: var(--interactive-accent); }
+/* PC 가운데 창: 휴대폰 시트와 같은 칸 · 순서 · 모양, 저장은 아래 오른쪽 버튼 (폭 480) */
+.modal.dsc-modal.dsc-pc { padding: 24px; }
+.dsc-pc .dsc-dt-top { padding: 0; }
+.dsc-pc .dsc-dt-actions { margin-top: 0; }
+.dsc-modal.dsc-detail.dsc-pc .modal-content { padding: 16px 0 0; }
+.dsc-pc .dsc-foot { margin-top: 16px; }
+.dsc-pc .dsc-suggest { top: calc(100% + 4px); left: 16px; }
+
 /* ---------- 휴대폰: 하단 네비게이션 여백 · 글자 크기 (2026-09-30) ---------- */
 /* 떠 있는 하단 탭 바 뒤로 마지막 카드가 들어가지 않게: 옵시디언이 정한 아래 공간(홈 바 + 탭 바, 키보드가 있으면 줄어듦) + 16 */
 :root:root .is-phone .dsc-root { padding-bottom: calc(var(--view-bottom-spacing, 0px) + 16px); }
@@ -495,3 +529,11 @@
 .is-phone .dsc-detail .dsc-dt-pill { font-size: calc(var(--dsc-fs) * 0.875); }       /* 14 */
 .is-phone .dsc-detail .dsc-dt-label { font-size: calc(var(--dsc-fs) * 0.75); }       /* 12 */
 .is-phone .dsc-detail textarea.dsc-dt-text { font-size: var(--dsc-fs); }              /* 15 → 16 */
+.is-phone .dsc-card .dsc-period { font-size: calc(var(--dsc-fs) * 0.875); }         /* 12 → 14 */
+.is-phone .dsc-detail .dsc-dt-kind { font-size: calc(var(--dsc-fs) * 0.875); }       /* 14 */
+.is-phone .dsc-detail .dsc-md { font-size: var(--dsc-fs); }                          /* 15 → 16 */
+.is-phone .dsc-detail .dsc-md :is(h1, h2, h3, h4, h5, h6) { font-size: calc(var(--dsc-fs) * 1.0625); } /* 17 */
+.is-phone .dsc-detail .dsc-fmt-btn { font-size: calc(var(--dsc-fs) * 0.8125); }      /* 13 */
+.is-phone .dsc-detail .dsc-dp-title { font-size: calc(var(--dsc-fs) * 0.9375); }     /* 15 */
+.is-phone .dsc-detail .dsc-dp-day { font-size: calc(var(--dsc-fs) * 0.9375); }       /* 15 */
+.is-phone .dsc-detail .dsc-dp-wd, .is-phone .dsc-detail .dsc-dp-len, .is-phone .dsc-detail .dsc-dt-col .dsc-help { font-size: calc(var(--dsc-fs) * 0.75); } /* 12 */
